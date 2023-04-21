@@ -22,35 +22,56 @@ def setup_for_distributed(is_master):
 
     builtin_print = __builtin__.print
 
-    def print(*args, **kwargs):
+    def dprint(*args, **kwargs):
         force = kwargs.pop("force", False)
         if is_master or force:
             builtin_print(*args, **kwargs)
 
-    __builtin__.print = print
+    __builtin__.print = dprint
 
 
 def is_dist_avail_and_initialized():
+    """_summary_
+
+    Returns:
+        _type_: _description_
+    """
     if not dist.is_available():
         return False
+    
     if not dist.is_initialized():
         return False
     return True
 
 
 def get_world_size():
+    """_summary_
+
+    Returns:
+        _type_: _description_
+    """
     if not is_dist_avail_and_initialized():
         return 1
     return dist.get_world_size()
 
 
 def get_rank():
+    """_summary_
+
+    Returns:
+        _type_: _description_
+    """
     if not is_dist_avail_and_initialized():
         return 0
     return dist.get_rank()
 
 
 def is_main_process():
+    """_summary_
+
+    Returns:
+        _type_: _description_
+    """
     return get_rank() == 0
 
 

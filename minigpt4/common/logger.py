@@ -11,7 +11,7 @@ import time
 from collections import defaultdict, deque
 
 import torch
-import torch.distributed as dist
+import torch.distributed as dist  # torch 单机多卡训练
 
 from minigpt4.common import dist_utils
 
@@ -30,6 +30,12 @@ class SmoothedValue(object):
         self.fmt = fmt
 
     def update(self, value, n=1):
+        """添加元素
+
+        Args:
+            value (_type_): _description_
+            n (int, optional): _description_. Defaults to 1.
+        """
         self.deque.append(value)
         self.count += n
         self.total += value * n
@@ -49,24 +55,49 @@ class SmoothedValue(object):
 
     @property
     def median(self):
+        """窗口均值
+
+        Returns:
+            _type_: _description_
+        """
         d = torch.tensor(list(self.deque))
         return d.median().item()
 
     @property
     def avg(self):
+        """窗口平均
+
+        Returns:
+            _type_: _description_
+        """
         d = torch.tensor(list(self.deque), dtype=torch.float32)
         return d.mean().item()
 
     @property
     def global_avg(self):
+        """全局平均
+
+        Returns:
+            _type_: _description_
+        """
         return self.total / self.count
 
     @property
     def max(self):
+        """窗口最大
+
+        Returns:
+            _type_: _description_
+        """
         return max(self.deque)
 
     @property
     def value(self):
+        """最新值
+
+        Returns:
+            _type_: _description_
+        """
         return self.deque[-1]
 
     def __str__(self):
@@ -80,8 +111,13 @@ class SmoothedValue(object):
 
 
 class MetricLogger(object):
+    """metric logger
+
+    Args:
+        object (_type_): _description_
+    """
     def __init__(self, delimiter="\t"):
-        self.meters = defaultdict(SmoothedValue)
+        self.meters = defaultdict(SmoothedValue) # default = SmoothedValue
         self.delimiter = delimiter
 
     def update(self, **kwargs):

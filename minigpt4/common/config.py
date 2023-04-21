@@ -14,6 +14,8 @@ from minigpt4.common.registry import registry
 
 
 class Config:
+    """config class
+    """
     def __init__(self, args):
         self.config = {}
 
@@ -50,6 +52,14 @@ class Config:
         runner_config_validator.validate(runner_config)
 
     def _build_opt_list(self, opts):
+        """build opt list
+
+        Args:
+            opts (_type_): _description_
+
+        Returns:
+            _type_: _description_
+        """
         opts_dot_list = self._convert_to_dot_list(opts)
         return OmegaConf.from_dotlist(opts_dot_list)
 
@@ -204,9 +214,7 @@ class ConfigValidator:
 
     def __init__(self, description):
         self.description = description
-
         self.arguments = dict()
-
         self.parsed_args = None
 
     def __getitem__(self, key):
@@ -246,15 +254,25 @@ class ConfigValidator:
         return config
 
     def format_arguments(self):
+        """format all self arguments
+
+        Returns:
+            _type_: _description_
+        """
         return str([f"{k}" for k in sorted(self.arguments.keys())])
 
     def format_help(self):
-        # description + key-value pair string for each argument
+        """description + key-value pair string for each argument
+        Returns:
+            _type_: _description_
+        """
+        # 
         help_msg = str(self.description)
         return help_msg + ", available arguments: " + self.format_arguments()
 
     def print_help(self):
-        # display help message
+        """display help message
+        """
         print(self.format_help())
 
 
